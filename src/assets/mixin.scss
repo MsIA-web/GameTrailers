@@ -1,0 +1,6 @@
+@mixin button-click {
+  transition: 0.3s ease;
+  &:active {
+    transform: scale(1.1);
+  }
+}

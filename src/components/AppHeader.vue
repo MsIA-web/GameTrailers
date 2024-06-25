@@ -54,7 +54,7 @@
 <style lang="scss" scoped>
 @import '../assets/mixin.scss';
 #header {
-  padding: 20px 40px;
+  padding: 20px 4vw;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -117,9 +117,6 @@
 }
 
 @media (max-width: 768px) {
-  #header {
-    padding: 20px 20px;
-  }
   #search {
     height: 30px;
   }
@@ -134,9 +131,6 @@
   }
 }
 @media (max-width: 480px) {
-  #header {
-    padding: 20px 10px;
-  }
   #search {
     height: 25px;
   }

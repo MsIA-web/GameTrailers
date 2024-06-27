@@ -26,7 +26,5 @@ export async function createRoutes() {
       component: ItemsPage,
     })
   }
-
   return router
 }
-export default router

@@ -5,21 +5,30 @@ import { useRoute } from 'vue-router'
 import { usePageStore } from '@/stores/page'
 
 const route = useRoute()
-const store = usePageStore()
+const store: any = usePageStore()
 
 onMounted(async () => {
-  console.log('onMounted started')
-  await store.initialize()
+  try {
+    await store.initialize()
+  } catch (error) {
+    console.log('Error while onMounted', error)
+  }
 })
 
 watch(
   () => route.path,
   async () => {
-    console.log('watch started')
-    await store.initialize()
+    try {
+      await store.initialize()
+    } catch (error) {
+      console.error('Error while watch check update page', error)
+    }
   },
   { deep: true },
 )
+
+
+
 </script>
 
 <template>
@@ -27,12 +36,13 @@ watch(
     <ItemCart
       v-for="item in store.page"
       :key="item.id"
+      :id="item.id"
       :title="item.title"
       :imgVertUrl="item.imgVertUrl"
       :description="item.description"
     />
   </div>
-  <nav class="navigation">
+  <nav class="navigation" >
     <router-link
       v-if="store.currentPage !== 1 && store.currentPage !== null"
       :to="{
@@ -41,14 +51,14 @@ watch(
     >
     &#60
     </router-link>
-    <router-link
-      v-for="pageNum in store.pagesArray"
-      :key="pageNum"
-      :to="{ name: `page${pageNum}` }"
-      :class="{ active: store.currentPage === pageNum }"
-    >
-      {{ pageNum }}
-    </router-link>
+      <router-link
+        v-for="pageNum in store.pagesArray"
+        :key="pageNum"
+        :to="{ name: `page${pageNum}` }"
+        :class="{ active: store.currentPage === pageNum }"
+      >
+        {{ pageNum }}
+      </router-link>
     <router-link
       v-if="store.currentPage !== store.totalPages && store.currentPage !== null && store.totalPages !== null"
       :to="store.currentPage < store.totalPages ? {name: `page${store.currentPage + 1}`} : ''"

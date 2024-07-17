@@ -1,10 +1,8 @@
-<script setup lang="ts">
-import ItemsPage from '../views/ItemsPage.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div id="main">
-    <ItemsPage />
+    <router-view />
   </div>
 </template>
 

@@ -13,7 +13,6 @@
   justify-content: space-between;
   background-color: black;
   padding: 10px 4vw;
-  margin-top: 25px;
 }
 span {
   color: white;

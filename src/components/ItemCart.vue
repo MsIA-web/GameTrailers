@@ -1,17 +1,38 @@
 <script setup lang="ts">
-defineProps({
+import { usePageStore } from '@/stores/page'
+const props = defineProps({
   id: Number,
   title: String,
   imgVertUrl: String,
   description: String,
 })
+
+const store = usePageStore()
+const encodedTitle =
+  props.title !== undefined ? encodeURIComponent(props.title) : ''
 </script>
 
 <template>
   <div class="cart-item">
-    <img class="poster-vert" :src="imgVertUrl" alt="image poster" />
+    <router-link
+      :to="{
+        name: `page${store.currentPage}ItemInfo`,
+        params: { title: encodedTitle },
+        query: { id },
+      }"
+    >
+      <img class="poster-vert" :src="imgVertUrl" alt="image poster" />
+    </router-link>
     <div class="item-info">
-      <span class="name size-22">{{ title }}</span>
+      <router-link
+        :to="{
+          name: `page${store.currentPage}ItemInfo`,
+          params: { title: encodedTitle },
+          query: { id },
+        }"
+      >
+        <span class="name size-22">{{ title }}</span>
+      </router-link>
       <p class="description size-20">
         {{ description }}
       </p>
@@ -44,6 +65,7 @@ defineProps({
   gap: 5vh;
 }
 .name {
+  color: white;
   margin-top: 20px;
   font-weight: bold;
   font-size: 22px;
@@ -67,7 +89,12 @@ defineProps({
 @media (max-width: 480px) {
   .cart-item {
     flex-direction: column;
+    align-items: center;
   }
+  .item-info {
+    align-items: center;
+  }
+
   .name {
     margin: auto;
   }

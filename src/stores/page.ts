@@ -1,50 +1,111 @@
 import { defineStore } from 'pinia'
-import { getData, getTotalPageCount } from '../services/EventServices'
+import {
+  getPageData,
+  getTotalItemsCount,
+  getTotalPageCount,
+} from '../services/EventServices'
 
-export const usePageStore = defineStore('page', {
-  state: () => ({
+interface TrailersPreview {
+  url: string
+}
+
+interface CurrentItem {
+  id: number
+  title: string
+  imgLandUrl: string
+  releaseDate: string
+  developer: string
+  publisher: string
+  tags: string | Array<any>
+  img1Url: string
+  img2Url: string
+  img3Url: string
+  img4Url: string
+  img5Url: string
+  trailerUrl: string
+  trailerPreview: TrailersPreview
+  gameLink: string
+  steamIcon: string
+}
+interface MyStoreState {
+  page: Array<any>
+  TotalItemsCount: number | null
+  currentPage: number | null
+  totalPages: number | null
+  pagesArray: Array<number>
+  currentItem: CurrentItem
+}
+
+interface MyStoreActions {
+  getCurrentPage(): void
+  fetchTotalPages(): Promise<void>
+  fetchPageData(): Promise<void>
+  initialize(): Promise<void>
+  getElementById(id: number): void
+  parseTags(): void
+  GetAndConvertItemTags(): void
+}
+
+export const usePageStore = defineStore<'page', MyStoreState>({
+  id: 'page',
+  state: (): MyStoreState => ({
     page: <Array<any>>[],
-    currentPage: <number | null>null,
-    totalPages: <number | null>null,
-    pagesArray: <number[]>[],
+    TotalItemsCount: null,
+    currentPage: null,
+    totalPages: null,
+    pagesArray: [],
+    currentItem: {} as CurrentItem,
   }),
   actions: {
-    getCurrentPage() {
+    getCurrentPage(): void {
       const url = window.location.pathname
       const regex = /(\d+)$/
       const match = url.match(regex)
       if (match && match[1]) {
-        return parseInt(match[1], 10)
+        this.currentPage = parseInt(match[1], 10)
       } else {
-        return null
+        console.log('Current page not found')
       }
     },
-    async fetchTotalPages() {
-      console.log('fetchTotalPages before fetch', this.totalPages)
-      this.totalPages = await getTotalPageCount()
-      console.log('fetchTotalPages after fetch', this.totalPages)
-      if (this.totalPages !== null) {
-        this.pagesArray = Array.from(
-          { length: this.totalPages },
-          (_, k) => k + 1,
-        )
-        console.log('pagesArray', this.pagesArray)
+    async fetchTotalPages(this: MyStoreState & MyStoreActions) {
+      try {
+        this.totalPages = await getTotalPageCount()
+        if (this.totalPages !== null) {
+          this.pagesArray = Array.from(
+            { length: this.totalPages },
+            (_, k) => k + 1,
+          )
+        }
+      } catch (error) {
+        console.error('Error while fetching total pages:', error)
       }
     },
-    async fetchData(pageNum: number) {
-      this.page = await getData(pageNum)
-    },
-    async initialize() {
-      const newPage = this.getCurrentPage()
-      if (newPage === this.currentPage) {
-        console.log('reload page')
-        return await this.fetchTotalPages()
+    async fetchPageData(this: MyStoreState & MyStoreActions) {
+      try {
+        if (this.currentPage !== null)
+          this.page = await getPageData(this.currentPage)
+      } catch (error) {
+        console.error('Error while fetching data:', error)
       }
-      this.currentPage = newPage
-      await this.fetchTotalPages()
-      if (this.currentPage !== null) {
-        await this.fetchData(this.currentPage)
+    },
+    async initialize(this: MyStoreState & MyStoreActions) {
+      try {
+        await getTotalItemsCount()
+        this.getCurrentPage()
+        await this.fetchTotalPages()
+        await this.fetchPageData()
+      } catch (error) {
+        console.error('Error while initializing:', error)
+      }
+    },
+    getElementById(this: MyStoreState & MyStoreActions, id: number): void {
+      const item = this.page.find((item) => item.id === id)
+      if (item) {
+        this.currentItem = item
+      } else {
+        console.log(`Item with id ${id} not found`)
       }
     },
   },
+  persist: true,
 })

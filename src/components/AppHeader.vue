@@ -2,7 +2,9 @@
 
 <template>
   <div id="header">
-    <span id="logo-name" class="size-32">GAME<br />TRAILERS</span>
+    <router-link :to="{ name: 'page1' }">
+      <span id="logo-name" class="size-32">GAME<br />TRAILERS</span>
+    </router-link>
     <div id="search">
       <input
         id="search-input"

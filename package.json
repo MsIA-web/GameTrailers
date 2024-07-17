@@ -14,11 +14,18 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.2",
+    "@splidejs/splide": "^4.1.4",
+    "@splidejs/vue-splide": "^0.6.12",
     "axios": "^1.7.2",
     "pinia": "^2.1.7",
     "pinia-plugin-persist": "^1.0.0",
+    "pinia-plugin-persistedstate": "^3.2.1",
+    "swiper": "^11.1.4",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-carousel": "^0.18.0",
+    "vue-router": "^4.3.0",
+    "vue3-carousel": "^0.3.3"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useSearchStore } from './search'
 import {
   getPageData,
   getTotalItemsCount,
@@ -25,7 +26,7 @@ interface CurrentItem {
   trailerUrl: string
   trailerPreview: TrailersPreview
   gameLink: string
-  steamIcon: string
+  gameIcon: string
 }
 interface MyStoreState {
   page: Array<any>
@@ -99,11 +100,17 @@ export const usePageStore = defineStore<'page', MyStoreState>({
       }
     },
     getElementById(this: MyStoreState & MyStoreActions, id: number): void {
+      const store = useSearchStore()
       const item = this.page.find((item) => item.id === id)
       if (item) {
         this.currentItem = item
       } else {
-        console.log(`Item with id ${id} not found`)
+        const item = store.searchItems.find((item) => item.id === id)
+        if (item) {
+          this.currentItem = item
+        } else {
+          console.log(`Item with id ${id} not found`)
+        }
       }
     },
   },

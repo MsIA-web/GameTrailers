@@ -2,6 +2,16 @@ import axios from 'axios'
 
 const itemsPerPage: number = 5
 
+async function getData(): Promise<any> {
+  try {
+    const response = await axios.get(`https://0a48175ddb6f7777.mokky.dev/games`)
+    return response.data
+  } catch (error) {
+    console.error('Error while fetching data items:', error)
+    throw error
+  }
+}
+
 async function getPageData(currentPage: number): Promise<any> {
   try {
     const response = await axios.get(
@@ -29,4 +39,4 @@ async function getTotalPageCount(): Promise<number> {
   return Math.ceil(totalItemsCount / itemsPerPage)
 }
 
-export { getPageData, getTotalPageCount, getTotalItemsCount }
+export { getPageData, getTotalPageCount, getTotalItemsCount, getData }

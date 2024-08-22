@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePageStore } from '@/stores/page'
+import { useSearchStore } from '@/stores/search'
 
 const route = useRoute()
 const store: any = usePageStore()
+const storeSearch: any = useSearchStore()
 
 const images = ref<any[]>([])
 const trailers = ref<any[]>([])
@@ -68,10 +70,9 @@ const linking = () => {
   }
 }
 
-onMounted(async () => {
+const fetchData = async () => {
   try {
     const itemId = Number(route.query.id)
-    console.log('itemId', itemId)
     store.getElementById(itemId)
     for (let key in store.currentItem.imgUrl) {
       let id = +key.replace('imgUrl', '')
@@ -119,7 +120,19 @@ onMounted(async () => {
   } catch (error) {
     console.error(error)
   }
+  storeSearch.searchItems = []
+}
+
+onMounted(async () => {
+  await fetchData()
 })
+watch(
+  route,
+  () => {
+    fetchData()
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -209,7 +222,7 @@ onMounted(async () => {
       <img
         @click="linking()"
         id="link"
-        :src="store.currentItem.steamIcon"
+        :src="store.currentItem.gameIcon"
         alt="Game Link"
       />
     </div>
@@ -324,6 +337,8 @@ onMounted(async () => {
 #link {
   cursor: pointer;
   transition: 0.3s ease;
+  width: 32px;
+  height: 32px;
   @media (hover: hover) {
     &:hover {
       transform: scale(1.1);

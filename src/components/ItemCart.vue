@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { usePageStore } from '@/stores/page'
+import { encodedTitle } from '../utils/utils'
 const props = defineProps({
   id: Number,
   title: String,
   imgVertUrl: String,
   description: String,
 })
-
-const store = usePageStore()
-const encodedTitle =
-  props.title !== undefined ? encodeURIComponent(props.title) : ''
 </script>
 
 <template>
   <div class="cart-item">
     <router-link
       :to="{
-        name: `page${store.currentPage}ItemInfo`,
-        params: { title: encodedTitle },
+        name: `itemInfo`,
+        params: { title: encodedTitle(props) },
         query: { id },
       }"
     >
@@ -26,8 +22,8 @@ const encodedTitle =
     <div class="item-info">
       <router-link
         :to="{
-          name: `page${store.currentPage}ItemInfo`,
-          params: { title: encodedTitle },
+          name: `itemInfo`,
+          params: { title: encodedTitle(props) },
           query: { id },
         }"
       >
@@ -56,6 +52,7 @@ const encodedTitle =
   height: 200px;
   cursor: pointer;
   align-self: center;
+  border-radius: 0.75em;
 }
 .item-info {
   color: white;

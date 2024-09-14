@@ -13,7 +13,6 @@
 
   onMounted(async () => {
     try {
-      console.log('Page onMounted')
       await store.initialize()
     } catch (error) {
       console.log('Error while onMounted', error)

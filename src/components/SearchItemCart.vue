@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { encodedTitle } from '../utils/utils'
+  import { encodedTitle } from '../utils/utils'
 
-const props = defineProps({
-  id: Number,
-  title: String,
-  imgVertUrl: String,
-})
+  const props = defineProps({
+    id: Number,
+    title: String,
+    imgVertUrl: String,
+  })
 </script>
 
 <template>
@@ -24,25 +24,37 @@ const props = defineProps({
 </template>
 
 <style scoped lang="scss">
-.search-item-cart {
-  width: 100%;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  gap: 1vw;
-  cursor: pointer;
-}
-.search-poster {
-  width: 6vw;
-  height: 8vw;
-  cursor: pointer;
-  object-fit: contain;
-  border-radius: 0.75rem;
-}
-.search-title {
-  font-size: 20px;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-}
+  .search-item-cart {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    cursor: pointer;
+  }
+  .search-poster {
+    width: 6vw;
+    height: 8vw;
+    cursor: pointer;
+    object-fit: contain;
+    border-radius: 0.75rem;
+  }
+  .search-title {
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
+  @media (max-width: 700px) {
+    .search-poster {
+      width: 8vw;
+      height: 10vw;
+    }
+  }
+  @media (max-width: 480px) {
+    .search-poster {
+      width: 12vw;
+      height: 14vw;
+    }
+  }
 </style>

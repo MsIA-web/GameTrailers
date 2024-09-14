@@ -68,17 +68,30 @@
       changeUrlCurrentPage()
       await createSearchRoutes()
       await fetchSearchResults()
+      console.log(route.query)
     } catch (error) {
       console.error('Error during onMounted:', error)
     }
   })
 
   watch(
-    () => route.query.q,
+    () => {
+      store.SesearchOnlyFilters
+    },
+    () => {
+      console.log('adadsa')
+      if (store.searchOnlyFilters) {
+        store.addSearchItems('')
+        loading.value = false
+      }
+    },
+  )
+
+  watch(
+    () => route.query,
     async () => {
       try {
-        console.log('watch route query')
-        if (route.query.q === '') {
+        if (route.query.q === '' && route.query.tags?.length === 0) {
           store.addSearchItems('')
           store.inputValue = ''
           loading.value = false
@@ -108,7 +121,7 @@
   <div v-else>
     <div
       class="search-empty"
-      v-if="!loading && (searchResult.length === 0 || route.query.q === '')"
+      v-if="!loading && searchResult.length === 0 && route.query.q === ''"
     >
       <span class="fail-search">По вашему запросу ничего не найдено</span>
     </div>

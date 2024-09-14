@@ -1,138 +1,192 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { usePageStore } from '@/stores/page'
-import { useSearchStore } from '@/stores/search'
+  import { onMounted, ref, watch } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { usePageStore } from '@/stores/page'
+  import { useSearchStore } from '@/stores/search'
+  // import Splide from '@splidejs/splide'
 
-const route = useRoute()
-const store: any = usePageStore()
-const storeSearch: any = useSearchStore()
+  const route = useRoute()
+  const store: any = usePageStore()
+  const storeSearch: any = useSearchStore()
 
-const images = ref<any[]>([])
-const trailers = ref<any[]>([])
-const trailersPreview = ref<any>([])
+  const images = ref<any[]>([])
+  const trailers = ref<any[]>([])
+  const trailersPreview = ref<any>([])
 
-const mainSplideImages = ref<any>(null)
-const thumbnailSplideImages = ref<any>(null)
+  const mainSplideImages = ref<any>(null)
+  const thumbnailSplideImages = ref<any>(null)
 
-const mainSplideTrailers = ref<any>(null)
-const thumbnailSplideTrailers = ref<any>(null)
+  const mainSplideTrailers = ref<any>(null)
+  const thumbnailSplideTrailers = ref<any>(null)
 
-const isMobile = ref<boolean>(false)
+  const isMobile = ref<boolean>(false)
 
-const updateIsMobile = () => {
-  isMobile.value = window.innerWidth <= 480
-}
-
-const mainOptions = {
-  width: '100%',
-  height: '100%',
-  type: 'fade',
-  rewind: true,
-  pagination: false,
-  arrows: false,
-  drag: false,
-}
-const mainOptionsForTrailers = {
-  width: '100%',
-  height: '100%',
-  fixedHeight: '39.35vw',
-  type: 'fade',
-  rewind: true,
-  pagination: false,
-  arrows: false,
-  drag: false,
-}
-const thumbnailsOptions = {
-  fixedWidth: '20vw',
-  fixedHeight: '100%',
-  gap: 10,
-  rewind: true,
-  pagination: false,
-  isNavigation: true,
-  focus: 'center',
-  breakpoints: {
-    768: {
-      arrows: false,
-    },
-    480: {
-      fixedWidth: '30vw',
-    },
-  },
-}
-
-const linking = () => {
-  const win = window.open(store.currentItem.gameLink, '_blank')
-  if (win) {
-    win.opener = null
-  } else {
-    console.error('Не удалось открыть новое окно')
+  const updateIsMobile = () => {
+    isMobile.value = window.innerWidth <= 480
   }
-}
 
-const fetchData = async () => {
-  try {
-    const itemId = Number(route.query.id)
-    store.getElementById(itemId)
-    for (let key in store.currentItem.imgUrl) {
-      let id = +key.replace('imgUrl', '')
-      images.value.push({
-        id: id,
-        url: store.currentItem.imgUrl[key],
-      })
-    }
-    for (let key in store.currentItem.trailerUrl) {
-      let id = +key.replace('trailerUrl', '')
-      trailers.value.push({
-        id: id,
-        url: store.currentItem.trailerUrl[key],
-      })
-    }
-    for (let key in store.currentItem.trailerPreview) {
-      let id = +key.replace('trailerPreview', '')
-      trailersPreview.value.push({
-        id: id,
-        url: store.currentItem.trailerPreview[key],
-      })
-    }
-    if (
-      mainSplideImages.value !== null &&
-      thumbnailSplideImages.value !== null &&
-      mainSplideTrailers.value !== null &&
-      thumbnailSplideTrailers.value !== null
-    ) {
-      const mainImages = mainSplideImages.value.splide
-      const thumbnailsImages = thumbnailSplideImages.value.splide
+  const mainOptions = {
+    width: '100%',
+    height: '100%',
+    type: 'fade',
+    rewind: true,
+    pagination: false,
+    arrows: false,
+    drag: false,
+  }
+  const mainOptionsForTrailers = {
+    width: '100%',
+    height: '100%',
+    fixedHeight: '39.35vw',
+    type: 'fade',
+    rewind: true,
+    pagination: false,
+    arrows: false,
+    drag: false,
+  }
+  const thumbnailsOptions = {
+    fixedWidth: '20vw',
+    fixedHeight: '100%',
+    gap: 10,
+    rewind: true,
+    pagination: false,
+    isNavigation: true,
+    focus: 'center' as const,
+    breakpoints: {
+      768: {
+        arrows: false,
+      },
+      480: {
+        fixedWidth: '30vw',
+      },
+    },
+  }
 
-      const mainTrailers = mainSplideTrailers.value.splide
-      const thumbnailsTrailers = thumbnailSplideTrailers.value.splide
-      if (
-        mainImages &&
-        thumbnailsImages &&
-        mainTrailers &&
-        thumbnailsTrailers
-      ) {
-        mainImages.sync(thumbnailsImages)
-        mainTrailers.sync(thumbnailsTrailers)
+  const linking = () => {
+    const win = window.open(store.currentItem.gameLink, '_blank')
+    if (win) {
+      win.opener = null
+    } else {
+      console.error('Не удалось открыть новое окно')
+    }
+  }
+
+  const fetchData = async () => {
+    try {
+      const itemId = Number(route.query.id)
+      store.getElementById(itemId)
+      for (let key in store.currentItem.imgUrl) {
+        let id = +key.replace('imgUrl', '')
+        images.value.push({
+          id: id,
+          url: store.currentItem.imgUrl[key],
+        })
       }
-    }
-    updateIsMobile()
-  } catch (error) {
-    console.error(error)
-  }
-  storeSearch.searchItems = []
-}
+      for (let key in store.currentItem.trailerUrl) {
+        let id = +key.replace('trailerUrl', '')
+        trailers.value.push({
+          id: id,
+          url: store.currentItem.trailerUrl[key],
+        })
+      }
+      for (let key in store.currentItem.trailerPreview) {
+        let id = +key.replace('trailerPreview', '')
+        trailersPreview.value.push({
+          id: id,
+          url: store.currentItem.trailerPreview[key],
+        })
+      }
+      if (
+        mainSplideImages.value !== null &&
+        thumbnailSplideImages.value !== null &&
+        mainSplideTrailers.value !== null &&
+        thumbnailSplideTrailers.value !== null
+      ) {
+        const mainImages = mainSplideImages.value.splide
+        const thumbnailsImages = thumbnailSplideImages.value.splide
 
-onMounted(async () => {
-  await fetchData()
-})
-watch(
-  route,
-  () => {
-    fetchData()
-  },
-  { deep: true },
-)
+        const mainTrailers = mainSplideTrailers.value.splide
+        const thumbnailsTrailers = thumbnailSplideTrailers.value.splide
+        if (
+          mainImages &&
+          thumbnailsImages &&
+          mainTrailers &&
+          thumbnailsTrailers
+        ) {
+          mainImages.sync(thumbnailsImages)
+          mainTrailers.sync(thumbnailsTrailers)
+        }
+      }
+      updateIsMobile()
+    } catch (error) {
+      console.error(error)
+    }
+    storeSearch.searchItems = []
+  }
+  const players = ref<YT.Player[]>([])
+
+  const initializePlayers = () => {
+    const iframes = document.querySelectorAll('#trailers iframe')
+    players.value = Array.from(iframes).map((iframe) => {
+      const player = new YT.Player(iframe as HTMLIFrameElement, {
+        events: {
+          onReady: onPlayerReady,
+        },
+      })
+      return player
+    })
+  }
+
+  const onPlayerReady = (event: YT.PlayerEvent) => {
+    console.log('Player is ready', event)
+  }
+
+  const stopAndResetVideos = () => {
+    players.value.forEach((player) => {
+      player.pauseVideo() // Останавливаем видео
+      player.seekTo(0, false) // Сбрасываем видео на начало
+    })
+  }
+
+  onMounted(async () => {
+    await fetchData()
+    console.log(trailers.value)
+    // if (!window.YT) {
+    //   const script = document.createElement('script')
+    //   script.src = 'https://www.youtube.com/iframe_api'
+    //   document.body.appendChild(script)
+    //   window.onYouTubeIframeAPIReady = initializePlayers
+    // } else {
+    //   initializePlayers()
+    // }
+    // mainSplideTrailers.value = new Splide(
+    //   '#normal-trailers',
+    //   mainOptionsForTrailers,
+    // )
+    // thumbnailSplideTrailers.value = new Splide(
+    //   '#thumbnail-trailers',
+    //   thumbnailsOptions,
+    // )
+
+    // mainSplideTrailers.value.on('move', () => {
+    //   stopAndResetVideos()
+    // })
+
+    // thumbnailSplideTrailers.value.on('move', () => {
+    //   stopAndResetVideos()
+    // })
+
+    // mainSplideTrailers.value.mount()
+    // thumbnailSplideTrailers.value.mount()
+  })
+
+  watch(
+    route,
+    () => {
+      fetchData()
+    },
+    { deep: true },
+  )
 </script>
 
 <template>
@@ -230,126 +284,126 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-@import '../assets/mixin.scss';
+  @import '../assets/mixin.scss';
 
-.gamePage {
-  padding: 20px 4vw;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  color: white;
-}
-.landImg {
-  border-radius: 0.75rem;
-}
-.name {
-  font-size: 32px;
-  font-weight: bold;
-  align-self: center;
-}
-.info {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-}
-.info-product {
-  display: flex;
-  gap: 10px;
-}
-.product {
-  display: flex;
-  gap: 1vw;
-}
-.info-tags {
-  display: flex;
-  gap: 10px;
-}
-.gallery {
-  background-image: linear-gradient(90deg, #00000008 50%, #ffffff05);
-  border-radius: 0.75rem;
-  max-width: 70vw;
-  padding: 20px 10px;
-  align-self: center;
-  width: 100%;
-}
-
-.splide__slide {
-  opacity: 0.6;
-}
-
-.splide__slide.is-active {
-  opacity: 1;
-  border: none !important;
-}
-.splide__slide img {
-  width: 100%;
-  object-fit: cover;
-}
-
-.image {
-  border-radius: 0.75rem;
-}
-#thumbnail-gallery {
-  margin-top: 20px;
-}
-#trailers {
-  background-image: linear-gradient(90deg, #00000008 50%, #ffffff05);
-  border-radius: 0.75rem;
-  width: 70vw;
-  height: 100%;
-  padding: 20px 10px;
-  align-self: center;
-  padding: 20px 10px;
-  object-fit: cover;
-  overflow: hidden;
-}
-
-#thumbnail-trailers {
-  margin-top: 20px;
-}
-.thumbnail {
-  border-radius: 0.75rem;
-  width: 220px;
-  height: 140px;
-  object-fit: cover;
-}
-.trailer-link {
-  margin-top: 150px;
-}
-.normal {
-  width: 100%;
-  height: 100%;
-  border-radius: 0.75rem;
-}
-.splide {
-  padding: 0;
-}
-#gameLink {
-  align-self: center;
-  width: 70vw;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-#link {
-  cursor: pointer;
-  transition: 0.3s ease;
-  width: 32px;
-  height: 32px;
-  @media (hover: hover) {
-    &:hover {
-      transform: scale(1.1);
-    }
+  .gamePage {
+    padding: 20px 4vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: white;
   }
-}
-@media (max-width: 480px) {
+  .landImg {
+    border-radius: 0.75rem;
+  }
+  .name {
+    font-size: 32px;
+    font-weight: bold;
+    align-self: center;
+  }
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+  .info-product {
+    display: flex;
+    gap: 10px;
+  }
   .product {
+    display: flex;
+    gap: 1vw;
+  }
+  .info-tags {
+    display: flex;
+    gap: 10px;
+  }
+  .gallery {
+    background-image: linear-gradient(90deg, #00000008 50%, #ffffff05);
+    border-radius: 0.75rem;
+    max-width: 70vw;
+    padding: 20px 10px;
+    align-self: center;
+    width: 100%;
+  }
+
+  .splide__slide {
+    opacity: 0.6;
+  }
+
+  .splide__slide.is-active {
+    opacity: 1;
+    border: none !important;
+  }
+  .splide__slide img {
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .image {
+    border-radius: 0.75rem;
+  }
+  #thumbnail-gallery {
+    margin-top: 20px;
+  }
+  #trailers {
+    background-image: linear-gradient(90deg, #00000008 50%, #ffffff05);
+    border-radius: 0.75rem;
+    width: 70vw;
+    height: 100%;
+    padding: 20px 10px;
+    align-self: center;
+    padding: 20px 10px;
+    object-fit: cover;
+    overflow: hidden;
+  }
+
+  #thumbnail-trailers {
+    margin-top: 20px;
+  }
+  .thumbnail {
+    border-radius: 0.75rem;
+    width: 220px;
+    height: 140px;
+    object-fit: cover;
+  }
+  .trailer-link {
+    margin-top: 150px;
+  }
+  .normal {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.75rem;
+  }
+  .splide {
+    padding: 0;
+  }
+  #gameLink {
+    align-self: center;
+    width: 70vw;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3vw;
+    justify-content: center;
   }
-}
+  #link {
+    cursor: pointer;
+    transition: 0.3s ease;
+    width: 32px;
+    height: 32px;
+    @media (hover: hover) {
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+  @media (max-width: 480px) {
+    .product {
+      flex-direction: column;
+      align-items: center;
+      gap: 3vw;
+    }
+  }
 </style>

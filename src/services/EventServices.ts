@@ -15,7 +15,7 @@ async function getData(): Promise<any> {
 async function getPageData(currentPage: number): Promise<any> {
   try {
     const response = await axios.get(
-      `https://0a48175ddb6f7777.mokky.dev/games?page=${currentPage}&limit=5`,
+      `https://0a48175ddb6f7777.mokky.dev/games?sortBy=-id&page=${currentPage}&limit=5`,
     )
     return response.data.items
   } catch (error) {
@@ -38,5 +38,16 @@ async function getTotalPageCount(): Promise<number> {
   const totalItemsCount = await getTotalItemsCount()
   return Math.ceil(totalItemsCount / itemsPerPage)
 }
+
+// async function getSeatchResult(searchQuery: string): Promise<any> {
+//   try {
+//     const response = axios.get(
+//       `https://0a48175ddb6f7777.mokky.dev/games?title=${searchQuery}`,
+//     )
+//     console.log(response)
+//   } catch (error) {
+//     console.error('Error while fetching search result:', error)
+//   }
+// }
 
 export { getPageData, getTotalPageCount, getTotalItemsCount, getData }

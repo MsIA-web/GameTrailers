@@ -2,6 +2,11 @@ import { defineStore } from 'pinia'
 import { getData } from '@/services/EventServices'
 import { findPageById } from '../utils/utils'
 
+interface Tags {
+  tag: string
+  active: boolean
+}
+
 export const useSearchStore = defineStore('search', {
   state: () => ({
     data: <Array<any>>[],
@@ -11,9 +16,12 @@ export const useSearchStore = defineStore('search', {
     inputValue: <string>'',
     pagesArray: <Array<number>>[],
     routesReady: <boolean>false,
+    tags: <Array<Tags>>[],
+    chekedTags: <Array<string>>[],
+    filterData: <Array<any>>[],
   }),
   actions: {
-    async getData() {
+    async getData(): Promise<void> {
       try {
         const data = await getData()
         if (data.length !== 0) this.data = data
@@ -21,19 +29,66 @@ export const useSearchStore = defineStore('search', {
         console.error('Error while fetching data items:')
       }
     },
-    async addSearchItems(query: string) {
+    async allTags(): Promise<Array<string>> {
+      try {
+        return this.data.flatMap((item) => item.tags)
+      } catch (error) {
+        console.error('Error while fetching all tags:', error)
+        return []
+      }
+    },
+    async uniqueTags(): Promise<void> {
+      try {
+        const tagsStorage = await this.allTags()
+        const uniqueTags = Array.from(new Set(tagsStorage))
+        this.tags = uniqueTags.map((tag) => ({
+          tag: tag,
+          active: false,
+        }))
+
+        this.chekedTags.forEach((activeTag: string) => {
+          const tagIndex = this.tags.findIndex((t) => t.tag === activeTag)
+          if (tagIndex !== -1) {
+            this.tags[tagIndex].active = true
+          }
+        })
+      } catch (error) {
+        console.error('Error while fetching unique tags:', error)
+      }
+    },
+    addTag(tag: string): void {
+      const tagIndex = this.tags.findIndex((t) => t.tag === tag)
+      if (tagIndex !== -1) {
+        const isActive = this.tags[tagIndex].active
+        if (isActive) {
+          this.chekedTags.push(tag)
+        } else {
+          const activeTagIndex = this.chekedTags.indexOf(tag)
+          if (activeTagIndex !== -1) {
+            this.chekedTags.splice(activeTagIndex, 1)
+          }
+        }
+      }
+      this.filterData = this.data.filter((item) => {
+        return this.chekedTags.every((tag) => item.tags.includes(tag))
+      })
+    },
+    async addSearchItems(query: string): Promise<void> {
       try {
         const queryUpper = query.toUpperCase()
-
-        if (queryUpper === '') {
+        if (queryUpper === '' && this.filterData.length === 0) {
           this.searchItems = []
         } else {
           this.inputValue = query
-
-          this.searchItems = this.data.filter((item) =>
-            item.title.toUpperCase().includes(queryUpper),
-          )
-
+          if (this.filterData.length !== 0) {
+            this.searchItems = this.filterData.filter((item) =>
+              item.title.toUpperCase().includes(queryUpper),
+            )
+          } else {
+            this.searchItems = this.data.filter((item) =>
+              item.title.toUpperCase().includes(queryUpper),
+            )
+          }
           this.searchItems.forEach((item) => {
             item.pageNumber = findPageById(item.id)
           })
@@ -44,7 +99,7 @@ export const useSearchStore = defineStore('search', {
         console.error('Error while adding search items:')
       }
     },
-    async paginatedItems() {
+    async paginatedItems(): Promise<object> {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
       return this.searchItems.slice(start, end)
@@ -52,8 +107,9 @@ export const useSearchStore = defineStore('search', {
     async totalPages(): Promise<number> {
       return Math.ceil(this.searchItems.length / this.itemsPerPage)
     },
-    async fetchTotalPages() {
+    async fetchTotalPages(): Promise<void> {
       try {
+        if (this.searchItems.length === 0) return
         const numberPages = await this.totalPages()
         if (numberPages && Number.isInteger(numberPages) && numberPages > 0) {
           this.pagesArray = Array.from({ length: numberPages }, (_, k) => k + 1)

@@ -30,7 +30,9 @@
       searchInput.value.removeEventListener('blur', blur)
     }
     searchInput.value.addEventListener('blur', blur)
-    storeSearch.searchItems = storeSearch.filterData
+    if (storeSearch.filterData.length !== 0) {
+      storeSearch.searchItems = storeSearch.filterData
+    }
   }
 
   const handleInput = (event: any) => {
@@ -51,7 +53,9 @@
       if (event) {
         event.stopPropagation()
       }
-      storeSearch.searchItems = storeSearch.filterData
+      if (storeSearch.filterData.length !== 0) {
+        storeSearch.searchItems = storeSearch.filterData
+      }
       await nextTick()
       router.push({
         name: 'search-page1',

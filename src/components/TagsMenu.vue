@@ -21,7 +21,8 @@
   }
 
   onBeforeMount(async () => {
-    await storeSearch.uniqueTags()
+    await storeSearch.tagUpload()
+    await storeSearch.checkedTags()
   })
 
   onMounted(() => {

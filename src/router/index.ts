@@ -25,6 +25,13 @@ const router = createRouter({
       props: true,
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  },
 })
 
 export async function createRoutes() {
@@ -37,6 +44,7 @@ export async function createRoutes() {
         component: ItemsPage,
       })
     }
+
     return router
   } catch (error) {
     console.error('Error while creating routes:', error)
@@ -73,38 +81,28 @@ async function removeOldRoutes() {
 }
 
 async function createNewRoutes() {
-  // console.log('CNR Start creating new routes...')
   try {
     const store = useSearchStore()
-    // console.log('CNR Search store initialized.')
     let totalPages = await store.totalPages()
-    // console.log('CNR Total pages fetched from store:', totalPages)
     totalPages = totalPages === 0 ? 1 : totalPages
-    // console.log(
-    //   'CNR Adjusted total pages (ensuring at least 1 page):',
-    //   totalPages,
-    // )
+
     for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-      // console.log(`Adding route for page ${pageNum}...`)
       router.addRoute({
         path: `/search-page${pageNum}`,
         name: `search-page${pageNum}`,
         component: SearchResult,
         props: true,
       })
-      // console.log(`CNR Route for page ${pageNum} added successfully.`)
     }
     await nextTick()
     routesReady = true
     store.routesReady = routesReady
-    // console.log('CNR All routes created successfully.')
   } catch (error) {
     console.error('CNR Error while creating new routes:', error)
   }
 }
 
 export async function createSearchRoutes() {
-  // console.log('CSR Start function createSearchRoutes')
   try {
     const store = useSearchStore()
     routesRemoved = false
@@ -112,7 +110,6 @@ export async function createSearchRoutes() {
     store.routesReady = routesReady
     await removeOldRoutes()
     await nextTick()
-    // console.log('CSR Old routes removed, starting to create new routes')
     await new Promise<void>((resolve) => {
       const checkRoutesRemoved = setInterval(() => {
         if (routesRemoved) {
@@ -123,7 +120,6 @@ export async function createSearchRoutes() {
     })
     await createNewRoutes()
     await nextTick()
-    // console.log('CSR New routes created successfully')
   } catch (error) {
     console.error('Error while creating search routes:', error)
   }

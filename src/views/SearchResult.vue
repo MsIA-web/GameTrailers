@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import ItemCart from '@/components/ItemCart.vue'
-  import { onMounted, watch, ref } from 'vue'
+  import { onMounted, watch, ref, onBeforeMount } from 'vue'
   import { useRoute } from 'vue-router'
   import { useSearchStore } from '@/stores/search'
   import { createSearchRoutes } from '@/router/index'
@@ -27,6 +27,7 @@
 
   const searchResultDisplay = async (): Promise<void> => {
     searchResult.value = await store.paginatedItems()
+    console.log('searchResult', searchResult.value)
     await store.totalPages()
     resultData.value = true
   }
@@ -62,13 +63,18 @@
     }
   }
 
+  onBeforeMount(async () => {
+    changeUrlCurrentPage()
+    await fetchSearchResults()
+    await createSearchRoutes()
+
+    console.log('resolt')
+  })
+
   onMounted(async () => {
     try {
       await store.fetchTotalPages()
-      changeUrlCurrentPage()
-      await createSearchRoutes()
-      await fetchSearchResults()
-      console.log(route.query)
+      console.log('loading', loading.value)
     } catch (error) {
       console.error('Error during onMounted:', error)
     }
@@ -79,7 +85,6 @@
       store.SesearchOnlyFilters
     },
     () => {
-      console.log('adadsa')
       if (store.searchOnlyFilters) {
         store.addSearchItems('')
         loading.value = false

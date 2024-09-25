@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { filterByWordStart } from '../utils/utils'
 
 const itemsPerPage: number = 5
 
@@ -39,15 +40,32 @@ async function getTotalPageCount(): Promise<number> {
   return Math.ceil(totalItemsCount / itemsPerPage)
 }
 
-// async function getSeatchResult(searchQuery: string): Promise<any> {
-//   try {
-//     const response = axios.get(
-//       `https://0a48175ddb6f7777.mokky.dev/games?title=${searchQuery}`,
-//     )
-//     console.log(response)
-//   } catch (error) {
-//     console.error('Error while fetching search result:', error)
-//   }
-// }
+async function getSearchResult(searchQuery: string): Promise<any> {
+  try {
+    const response = await axios.get(
+      `https://0a48175ddb6f7777.mokky.dev/games?title=*${searchQuery}*`,
+    )
+    const filterResponse = filterByWordStart(response.data, searchQuery)
+    return filterResponse
+  } catch (error) {
+    console.error('Error while fetching search result:', error)
+  }
+}
 
-export { getPageData, getTotalPageCount, getTotalItemsCount, getData }
+async function getTags(): Promise<any> {
+  try {
+    const response = await axios.get('https://0a48175ddb6f7777.mokky.dev/tags')
+    return response.data
+  } catch (error) {
+    console.error('Error while fetching tags:', error)
+  }
+}
+
+export {
+  getPageData,
+  getTotalPageCount,
+  getTotalItemsCount,
+  getData,
+  getSearchResult,
+  getTags,
+}

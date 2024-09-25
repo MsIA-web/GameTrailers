@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { getData } from '@/services/EventServices'
-import { findPageById } from '../utils/utils'
+import { getData, getSearchResult, getTags } from '@/services/EventServices'
+import { findPageById, filterByWordStart } from '../utils/utils'
 
 interface Tags {
   tag: string
@@ -29,23 +29,20 @@ export const useSearchStore = defineStore('search', {
         console.error('Error while fetching data items:')
       }
     },
-    async allTags(): Promise<Array<string>> {
+    async tagUpload(): Promise<void> {
       try {
-        return this.data.flatMap((item) => item.tags)
-      } catch (error) {
-        console.error('Error while fetching all tags:', error)
-        return []
-      }
-    },
-    async uniqueTags(): Promise<void> {
-      try {
-        const tagsStorage = await this.allTags()
-        const uniqueTags = Array.from(new Set(tagsStorage))
-        this.tags = uniqueTags.map((tag) => ({
+        const allTags = await getTags()
+        this.tags = allTags.map((tag: any) => ({
           tag: tag,
           active: false,
         }))
+      } catch (error) {
+        console.error('Error while fetching unique tags:', error)
+      }
+    },
 
+    async checkedTags(): Promise<void> {
+      try {
         this.chekedTags.forEach((activeTag: string) => {
           const tagIndex = this.tags.findIndex((t) => t.tag === activeTag)
           if (tagIndex !== -1) {
@@ -53,9 +50,10 @@ export const useSearchStore = defineStore('search', {
           }
         })
       } catch (error) {
-        console.error('Error while fetching unique tags:', error)
+        console.error('Error while checking active tags:', error)
       }
     },
+
     addTag(tag: string): void {
       const tagIndex = this.tags.findIndex((t) => t.tag === tag)
       if (tagIndex !== -1) {
@@ -75,19 +73,14 @@ export const useSearchStore = defineStore('search', {
     },
     async addSearchItems(query: string): Promise<void> {
       try {
-        const queryUpper = query.toUpperCase()
-        if (queryUpper === '' && this.filterData.length === 0) {
+        if (query === '' && this.filterData.length === 0) {
           this.searchItems = []
         } else {
           this.inputValue = query
           if (this.filterData.length !== 0) {
-            this.searchItems = this.filterData.filter((item) =>
-              item.title.toUpperCase().includes(queryUpper),
-            )
+            this.searchItems = filterByWordStart(this.filterData, query)
           } else {
-            this.searchItems = this.data.filter((item) =>
-              item.title.toUpperCase().includes(queryUpper),
-            )
+            this.searchItems = await getSearchResult(query)
           }
           this.searchItems.forEach((item) => {
             item.pageNumber = findPageById(item.id)
@@ -100,6 +93,7 @@ export const useSearchStore = defineStore('search', {
       }
     },
     async paginatedItems(): Promise<object> {
+      console.log('searchItems', this.searchItems)
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
       return this.searchItems.slice(start, end)

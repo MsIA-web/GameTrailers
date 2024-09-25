@@ -45,6 +45,7 @@ interface MyStoreActions {
   getElementById(id: number): void
   parseTags(): void
   GetAndConvertItemTags(): void
+  extractMediaUrls(): any[]
 }
 
 export const usePageStore = defineStore<'page', MyStoreState>({
@@ -100,18 +101,34 @@ export const usePageStore = defineStore<'page', MyStoreState>({
       }
     },
     getElementById(this: MyStoreState & MyStoreActions, id: number): void {
-      const store = useSearchStore()
+      const storeSearch = useSearchStore()
       const item = this.page.find((item) => item.id === id)
       if (item) {
         this.currentItem = item
       } else {
-        const item = store.searchItems.find((item) => item.id === id)
+        const item = storeSearch.searchItems.find((item) => item.id === id)
         if (item) {
           this.currentItem = item
         } else {
           console.log(`Item with id ${id} not found`)
         }
       }
+    },
+    extractMediaUrls(
+      mediaKey: keyof typeof this.currentItem,
+      mediaArray: any[],
+    ): any[] {
+      const mediaUrls = this.currentItem[mediaKey] as any
+      if (mediaUrls) {
+        for (const i in mediaUrls) {
+          const id = +i.replace(mediaKey, '')
+          mediaArray.push({
+            id: id,
+            url: (mediaUrls as any)[i],
+          })
+        }
+      }
+      return mediaArray
     },
   },
   persist: true,

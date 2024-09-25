@@ -42,17 +42,15 @@
 
   const goHomePage = async (): Promise<void> => {
     clearSearchStore()
-    await storeSearch.getData()
     router.push({ name: 'page1' })
   }
 
   onMounted(async () => {
-    storeSearch.getData()
-    storeSearch.uniqueTags()
     if (route.path.includes('search-page')) {
       searchQuery.value = storeSearch.inputValue
     }
     storeSearch.routesReady = false
+    storeSearch.getData()
   })
 
   watch(route, () => {

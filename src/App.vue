@@ -2,14 +2,11 @@
   import AppHeader from './components/AppHeader.vue'
   import AppContent from './components/AppContent.vue'
   import AppFooter from './components/AppFooter.vue'
-  import { onBeforeMount } from 'vue'
-  import { useSearchStore } from '@/stores/search'
 
-  const searchStore = useSearchStore()
+  import { watch } from 'vue'
+  import { useSearchStore } from './stores/search'
 
-  onBeforeMount(async () => {
-    await searchStore.getData()
-  })
+  const storeSearch: any = useSearchStore()
 </script>
 
 <template>

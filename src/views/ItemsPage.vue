@@ -3,9 +3,11 @@
   import ItemCart from '@/components/ItemCart.vue'
   import { useRoute } from 'vue-router'
   import { usePageStore } from '@/stores/page'
+  import { useSearchStore } from '@/stores/search'
 
   const route = useRoute()
   const store: any = usePageStore()
+  const searchStore: any = useSearchStore()
 
   const isActive = (pageNum: string): boolean => {
     return route.name === `page${pageNum}`

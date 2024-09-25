@@ -8,14 +8,15 @@
 </template>
 
 <style lang="scss" scoped>
-#footer {
-  display: flex;
-  justify-content: space-between;
-  background-color: black;
-  padding: 10px 4vw;
-}
-span {
-  color: white;
-  font-weight: 500;
-}
+  #footer {
+    display: flex;
+    justify-content: space-between;
+    background-color: black;
+    padding: 10px 4vw;
+    margin-top: 10px;
+  }
+  span {
+    color: white;
+    font-weight: 500;
+  }
 </style>

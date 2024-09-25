@@ -6,4 +6,13 @@ const findPageById = (id: number): number => {
 const encodedTitle = (props: any) =>
   props.title !== undefined ? encodeURIComponent(props.title) : ''
 
-export { findPageById, encodedTitle }
+function filterByWordStart(items: any[], searchQuery: string): any[] {
+  return items.filter((item: any) => {
+    const words = item.title.split(' ')
+    return words.some((word: string) =>
+      word.toLowerCase().startsWith(searchQuery.toLowerCase()),
+    )
+  })
+}
+
+export { findPageById, encodedTitle, filterByWordStart }

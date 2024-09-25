@@ -12,3 +12,27 @@
     opacity: 1;
   }
 }
+@mixin splide-gallery {
+  .splide {
+    padding: 0;
+  }
+  .splide__slide {
+    opacity: 0.6;
+  }
+
+  .splide__slide.is-active {
+    opacity: 1;
+    border: none !important;
+  }
+  .splide__slide img {
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .image {
+    border-radius: 0.75rem;
+  }
+  #thumbnail-gallery {
+    margin-top: 20px;
+  }
+}
